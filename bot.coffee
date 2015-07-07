@@ -70,9 +70,7 @@ bot.addListener "error", (message) =>
     console.log "ERROR: ", message
 
 bot.connect () =>
-    console.log "################################################  connected"
     bot.join chan, () =>
-        console.log "############################################## joined"
         setInterval(
             (
                 () =>
