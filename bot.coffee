@@ -32,16 +32,23 @@ else
             when "150sk10" then "KS-1"
             else "untracked"
 
+formatDate = (date) ->
+    normalisedDate = new Date(date - (date.getTimezoneOffset() * 60 * 1000))
+    normalisedDate.toISOString().replace /\..+$|[^\d]/g, ''
+
+log = (msg) ->
+    console.log formatDate(new Date()) + ": " + msg
+
 available = (callback) =>
      request url, (error, response, body) =>
-         console.log "Request: error=" + JSON.stringify(error) + ", response=" + (response == undefined ? undefined : JSON.stringify(response).substr(0, 30) + "...") + ", body=" + (body == undefined ? undefined : JSON.stringify(body).substr(0, 20) + "...")
+         log "Request: error=" + JSON.stringify(error) + ", response=" + (response == undefined ? undefined : JSON.stringify(response).substr(0, 30) + "...") + ", body=" + (body == undefined ? undefined : JSON.stringify(body).substr(0, 20) + "...")
          ret = JSON.parse(body).answer.availability
          res = []
          for serv in ret
              name = nameof serv.reference
              if name != "untracked" and (serv.metaZones.some (el, i, a) => el.availability != "unknown" and el.availability != "unavailable")
                  res.push name
-         console.log " `-> " + JSON.stringify(res)
+         log " `-> " + JSON.stringify(res)
          callback(res)
 
 last_avail = []
@@ -67,7 +74,7 @@ bot = new irc.Client server, nick, {
 }
 
 bot.addListener "error", (message) =>
-    console.log "ERROR: ", message
+    log "ERROR: ", message
 
 bot.connect () =>
     bot.join chan, () =>
