@@ -2,9 +2,10 @@ irc     = require "irc"
 request = require "request"
 
 chan   = "#shotgun"
-server = "ircserver"
+server = "irc.rezosup.org"
 interv = 60
-canada = true
+canada = false
+
 if canada
     nick = "KsandraCa"
     url  = "https://ws.ovh.ca/dedicated/r2/ws.dispatcher/getAvailability2"
@@ -22,15 +23,13 @@ else
     url  = "https://ws.ovh.com/dedicated/r2/ws.dispatcher/getAvailability2"
     nameof = (code) =>
         return switch code
-            when "150sk60" then "KS-6"
-            when "150sk50" then "KS-5"
-            when "150sk40" then "KS-4"
-            when "150sk30" then "KS-3"
-            when "150sk22" then "KS-2 SSD"
-            when "150sk20" then "KS-2"
-            when "150sk20" then "KS-2"
-            when "150sk10" then "KS-1"
+            when "160sk32" then "KS-3C"
+            when "161sk2" then "KS-2E"
+            when "160sk2" then "KS-2A"
+            when "160sk1" then "KS-1"
             else "untracked"
+
+
 
 formatDate = (date) ->
     normalisedDate = new Date(date - (date.getTimezoneOffset() * 60 * 1000))
@@ -39,6 +38,9 @@ formatDate = (date) ->
 log = (msg) ->
     console.log formatDate(new Date()) + ": " + msg
 
+serv_available = (serv) =>
+  (serv.metaZones.some (el, i, a) => el.availability != "unknown" and el.availability != "unavailable" and (canada or el.zone == "fr"))
+
 available = (callback) =>
      request url, (error, response, body) =>
          log "Request: error=" + JSON.stringify(error) + ", response=" + (response == undefined ? undefined : JSON.stringify(response).substr(0, 30) + "...") + ", body=" + (body == undefined ? undefined : JSON.stringify(body).substr(0, 20) + "...")
@@ -46,7 +48,7 @@ available = (callback) =>
          res = []
          for serv in ret
              name = nameof serv.reference
-             if name != "untracked" and (serv.metaZones.some (el, i, a) => el.availability != "unknown" and el.availability != "unavailable")
+             if name != "untracked" and serv_available serv
                  res.push name
          log " `-> " + JSON.stringify(res)
          callback(res)
@@ -78,12 +80,10 @@ bot.addListener "error", (message) =>
 
 bot.connect () =>
     bot.join chan, () =>
-        setInterval(
-            (
-                () =>
-                    next_message (msg) =>
-                        if msg != ""
-                            bot.say chan, msg
-            ),
-            interv * 1000
-        )
+        update = () =>
+            next_message (msg) =>
+                if msg != ""
+                    bot.say chan, msg
+
+        update()
+        setInterval(update, interv * 1000)
