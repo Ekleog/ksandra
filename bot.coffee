@@ -4,7 +4,8 @@ request = require "request"
 chan   = "#shotgun"
 server = "irc.rezosup.org"
 interv = 60
-canada = true
+canada = false
+
 if canada
     nick = "KsandraCa"
     url  = "https://ws.ovh.ca/dedicated/r2/ws.dispatcher/getAvailability2"
