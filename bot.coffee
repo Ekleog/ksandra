@@ -38,6 +38,9 @@ formatDate = (date) ->
 log = (msg) ->
     console.log formatDate(new Date()) + ": " + msg
 
+serv_available = (serv) =>
+  (serv.metaZones.some (el, i, a) => el.availability != "unknown" and el.availability != "unavailable" and (canada or el.zone == "fr"))
+
 available = (callback) =>
      request url, (error, response, body) =>
          log "Request: error=" + JSON.stringify(error) + ", response=" + (response == undefined ? undefined : JSON.stringify(response).substr(0, 30) + "...") + ", body=" + (body == undefined ? undefined : JSON.stringify(body).substr(0, 20) + "...")
@@ -45,7 +48,7 @@ available = (callback) =>
          res = []
          for serv in ret
              name = nameof serv.reference
-             if name != "untracked" and (serv.metaZones.some (el, i, a) => el.availability != "unknown" and el.availability != "unavailable")
+             if name != "untracked" and serv_available serv
                  res.push name
          log " `-> " + JSON.stringify(res)
          callback(res)
