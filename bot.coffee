@@ -80,12 +80,10 @@ bot.addListener "error", (message) =>
 
 bot.connect () =>
     bot.join chan, () =>
-        setInterval(
-            (
-                () =>
-                    next_message (msg) =>
-                        if msg != ""
-                            bot.say chan, msg
-            ),
-            interv * 1000
-        )
+        update = () =>
+            next_message (msg) =>
+                if msg != ""
+                    bot.say chan, msg
+
+        update()
+        setInterval(update, interv * 1000)
