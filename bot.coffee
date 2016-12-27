@@ -22,15 +22,13 @@ else
     url  = "https://ws.ovh.com/dedicated/r2/ws.dispatcher/getAvailability2"
     nameof = (code) =>
         return switch code
-            when "150sk60" then "KS-6"
-            when "150sk50" then "KS-5"
-            when "150sk40" then "KS-4"
-            when "150sk30" then "KS-3"
-            when "150sk22" then "KS-2 SSD"
-            when "150sk20" then "KS-2"
-            when "150sk20" then "KS-2"
-            when "150sk10" then "KS-1"
+            when "160sk32" then "KS-3C"
+            when "161sk2" then "KS-2E"
+            when "160sk2" then "KS-2A"
+            when "160sk1" then "KS-1"
             else "untracked"
+
+
 
 formatDate = (date) ->
     normalisedDate = new Date(date - (date.getTimezoneOffset() * 60 * 1000))
