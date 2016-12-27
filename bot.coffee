@@ -2,7 +2,7 @@ irc     = require "irc"
 request = require "request"
 
 chan   = "#shotgun"
-server = "ircserver"
+server = "irc.rezosup.org"
 interv = 60
 canada = true
 if canada
